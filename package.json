@@ -1,0 +1,20 @@
+{
+  "name": "jquery-stacky-kit",
+  "version": "0.1.0",
+  "description": "jquery-sticky-kit extended to work for any div, not just the viewport",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jquery",
+    "sticky",
+    "stacky",
+    "kit",
+    "float",
+    "header",
+    "column"
+  ],
+  "author": "Ian Cordero <ianpcordero@live.com> (https://github.com/corderoi)",
+  "license": "MIT"
+}

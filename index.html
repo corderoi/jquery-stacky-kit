@@ -1,0 +1,201 @@
+<!-- 
+ index.html
+ jquery-stacky-kit
+
+ Created by Ian Cordero on 11/24/16.
+
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery Sticky Kit</title>
+
+    <!-- Lib -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+
+    <style>
+        .jskCont {
+            width: 80%; margin: 0 2rem; height: 50vh; overflow: hidden;
+            position: relative;
+        }
+
+        .jskInnerCont {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+        }
+
+        .stickyHeader {
+            width: 100%;
+        }
+
+        .th1 {
+            width: 95%;
+            background-color: white; height: 2rem;
+            border-bottom: 1px solid black;
+            margin: 0 0.25rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="view" style="width: 100%; height: 100%; overflow: visible;">
+        <h1>jQuery Sticky Kit</h1>
+        <div class="jskCont">
+            <div class="jskInnerCont">
+
+                <div class="stickyHeader">
+                    <h2 class="th1">
+                        Test header 1
+                    </h2>
+
+                    <ul>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>1</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>1</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>1</li>
+                    </ul>
+                </div>
+
+                <div class="stickyHeader">
+                    <h2 class="th1">
+                        Test header 2
+                    </h2>
+
+                    <ul>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>2</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>2</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>2</li>
+                    </ul>
+                </div>
+
+                <div class="stickyHeader">
+                    <h2 class="th1">
+                        Test header 3
+                    </h2>
+
+                    <ul>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>3</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>3</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>3</li>
+                    </ul>
+                </div>
+
+                <div class="stickyHeader">
+                    <h2 class="th1">
+                        Test header 4
+                    </h2>
+
+                    <ul>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>4</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>4</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>4</li>
+                    </ul>
+                </div>
+
+                <div class="stickyHeader">
+                    <h2 class="th1">
+                        Test header 5
+                    </h2>
+
+                    <ul>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>5</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>5</li>
+                        <li>This</li>
+                        <li>Is</li>
+                        <li>Some</li>
+                        <li>Sample</li>
+                        <li>Content</li>
+                        <li>5</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="src/main/javascript/jquery-stacky-kit.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            $('.th1').stick_in_parent({
+                container: $('.jskInnerCont')
+            });
+        });
+    </script>
+</body>
+</html>
