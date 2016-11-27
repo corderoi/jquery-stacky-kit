@@ -21,9 +21,9 @@
  *  stick to this outer container, if it is omitted they will stick to the
  *  nearest parent with position: relative.
  * - Throttle execution of window scroll callback (requires underscore.js
- *  throttle() and debounce() functions) to improve responsiveness.
- * - Additional "stacky_kit:reload" event to do a manual reinitialization of
- *  the plugin
+ *  throttle() and debounce() functions) to improve performance.
+ * - Additional reload call to do a manual reinitialization of the plugin
+ * - Pass the string message "destroy" to the plugin function to destroy plugin
  *
  * Dependencies:
  * 1. jQuery
@@ -31,9 +31,8 @@
  *
  * Note: because of a bug in recalculating after window resize, the plugin is
  * destroyed and reinitialized on window resize rather than simply recalculating
- * variables. It also breaks if the plugin is applied after the user has
- * scrolled down into the container. So the container is also forced to the
- * top. Until I/someone figures out how to fix these bugs this will have to do.
+ * variables. Until I/someone figures out how to fix these bugs this will have
+ * to do.
  *
  * Note: this JavaScript was originally generated from CoffeeScript, but the
  * modifications are made on the JS (this file).
@@ -63,6 +62,16 @@
         var elm, enable_bottoming, fn, i, inner_scrolling, len, manual_spacer,
             offset_top, parent_selector, recalc_every, sticky_class;
 
+        // Special arguments
+        switch (opts) {
+        case 'destroy':
+            return this.trigger("sticky_kit:detach");
+        case 'reload':
+            return this.trigger('stacky_kit:reload');
+        default:
+            break;
+        }
+
         if (opts == null) {
             opts = {};
         }
@@ -87,10 +96,10 @@
             var bottomed, detach, fixed, last_pos, containerHeight, offset,
                 parent, recalc, recalc_and_tick, recalc_counter, spacer, tick;
 
-            if (elm.data("stacky_kit")) {
+            if (elm.data("sticky_kit")) {
                 return;
             }
-            elm.data("stacky_kit", true);
+            elm.data("sticky_kit", true);
             containerHeight = win.height();
             parent = elm.parent();
             if (parent_selector != null) {
@@ -198,7 +207,7 @@
                                 position: "absolute",
                                 bottom: "",
                                 top: offset
-                            }).trigger("stacky_kit:unbottom");
+                            }).trigger("sticky_kit:unbottom");
                             parent.css('position', 'static'); //
                         }
                     }
@@ -216,7 +225,7 @@
                             width: "",
                             top: ""
                         };
-                        elm.css(css).removeClass(sticky_class).trigger("stacky_kit:unstick");
+                        elm.css(css).removeClass(sticky_class).trigger("sticky_kit:unstick");
                     }
                     if (inner_scrolling) {
                         win_height = win.height();
@@ -248,7 +257,7 @@
                                 spacer.append(elm);
                             }
                         }
-                        elm.trigger("stacky_kit:stick");
+                        elm.trigger("sticky_kit:stick");
                     }
                 }
                 if (fixed && enable_bottoming) {
@@ -266,7 +275,7 @@
                             position: "absolute",
                             bottom: padding_bottom,
                             top: "auto"
-                        }).trigger("stacky_kit:bottom");
+                        }).trigger("sticky_kit:bottom");
                     }
                 }
                 return elm;
@@ -289,11 +298,11 @@
                 detached = true;
                 win.off("touchmove", throttledTick);
                 win.off("scroll", throttledTick);
-                $window.off("resize", recreate);
-                $(document.body).off("stacky_kit:recalc", throttledRecalc);
-                $(document.body).off("stacky_kit:reload", recreate);
-                elm.off("stacky_kit:detach", detach);
-                elm.removeData("stacky_kit");
+                $window.off("resize", reload);
+                $(document.body).off("sticky_kit:recalc", throttledRecalc);
+                elm.off("stacky_kit:reload", reload);
+                elm.off("sticky_kit:detach", detach);
+                elm.removeData("sticky_kit");
                 elm.css({
                     position: "",
                     bottom: "",
@@ -315,20 +324,24 @@
                 throttledRecalc = _.debounce(recalc_and_tick, 200);
             win.on("touchmove", throttledTick);
             win.on("scroll", throttledTick);
-            $window.on("resize", recreate);
-            $(document.body).on("stacky_kit:recalc", throttledRecalc);
-            $(document.body).on("stacky_kit:reload", recreate);
-            elm.on("stacky_kit:detach", detach);
+            $window.on("resize", reload);
+            $(document.body).on("sticky_kit:recalc", throttledRecalc);
+            elm.on("stacky_kit:reload", reload);
+            elm.on("sticky_kit:detach", detach);
             return setTimeout(tick, 0);
         };
 
         var self = this,
-            recreate = _.debounce(function() {
+            reload = _.debounce(function() {
+                var top = win.scrollTop() || 0;
                 win.scrollTop(0);
                 setTimeout(function() {
-                    self.trigger('stacky_kit:detach');
+                    self.trigger('sticky_kit:detach');
                     setTimeout(function() {
                         self.stackyKit(opts);
+                        setTimeout(function() {
+                            win.scrollTop(top);
+                        });
                     }, 0);
                 }, 0);
             }, 200);
