@@ -10,7 +10,7 @@
  * @author corderoi
  * Original license:
  * @license Sticky-kit v1.1.2 | WTFPL | Leaf Corcoran 2015 | http://leafo.net
- * Modified by corderoi on 23 November 2016
+ * Modified by Ian Cordero on 23 November 2016
  *
  * Mod notes:
  * - Allow specifying the container via the 'container' option rather than
