@@ -335,15 +335,9 @@
             reload = _.debounce(function() {
                 var top = win.scrollTop() || 0;
                 win.scrollTop(0);
-                setTimeout(function() {
-                    self.trigger('sticky_kit:detach');
-                    setTimeout(function() {
-                        self.stackyKit(opts);
-                        setTimeout(function() {
-                            win.scrollTop(top);
-                        });
-                    }, 0);
-                }, 0);
+                self.trigger('sticky_kit:detach');
+                self.stackyKit(opts);
+                win.scrollTop(top);
             }, 200);
 
         for (i = 0, len = this.length; i < len; i++) {
