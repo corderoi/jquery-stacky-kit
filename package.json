@@ -1,6 +1,6 @@
 {
   "name": "jquery-stacky-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "jquery-sticky-kit extended to work for any div, not just the viewport",
   "main": "app.js",
   "scripts": {

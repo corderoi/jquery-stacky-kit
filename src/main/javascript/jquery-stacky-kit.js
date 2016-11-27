@@ -1,32 +1,68 @@
-/**
- @license Sticky-kit v1.1.2 | WTFPL | Leaf Corcoran 2015 | http://leafo.net
- */
+//
+// jquery-stacky-kit.js
+// jquery-stacky-kit
+//
+//
+//
+//
 
 /**
- * @author icordero
- * Modified by icordero on 23 November 2016
- * Mod notes: allow specifying the container; throttle execution of window scroll
- * callback (requires underscore.js throttle() function) to improve responsiveness.
+ * @author corderoi
+ * Original license:
+ * @license Sticky-kit v1.1.2 | WTFPL | Leaf Corcoran 2015 | http://leafo.net
+ * Modified by corderoi on 23 November 2016
+ *
+ * Mod notes:
+ * - Allow specifying the container via the 'container' option rather than
+ *  the original and rather useless window-only sticky functionality. Note: The
+ *  container must be the top-level scrolling container and it must have
+ *  position: static (this is the default). It is advisable to wrap this
+ *  container in a container with position: relative: the sticky elements will
+ *  stick to this outer container, if it is omitted they will stick to the
+ *  nearest parent with position: relative.
+ * - Throttle execution of window scroll callback (requires underscore.js
+ *  throttle() and debounce() functions) to improve responsiveness.
+ * - Additional "stacky_kit:reload" event to do a manual reinitialization of
+ *  the plugin
+ *
+ * Dependencies:
+ * 1. jQuery
+ * 2. underscore
  *
  * Note: because of a bug in recalculating after window resize, the plugin is
- * deactivated on when the window is resized.
+ * destroyed and reinitialized on window resize rather than simply recalculating
+ * variables. It also breaks if the plugin is applied after the user has
+ * scrolled down into the container. So the container is also forced to the
+ * top. Until I/someone figures out how to fix these bugs this will have to do.
+ *
+ * Note: this JavaScript was originally generated from CoffeeScript, but the
+ * modifications are made on the JS (this file).
  */
-(function () {
-    var $, win, $window;
+(function() {
+    var $, _, win, $window;
 
     $ = this.jQuery || window.jQuery;
+    _ = this._ || window._;
 
     $window = $(window);
 
     /**
+     * Sticks the specified element in the specified container.
      *
+     * Sticky elements are bound by their direct parent container and will scroll
+     * out of view if the parent scrolls out of view. The specified container
+     * must have position: static and an outer container with position: relative
+     * is needed to stick to (the inner scrolling container is what you specify
+     * here).
      * @param opts: object
      *          container: jQuery - jQuery selector for the container to affix
      *                      the sticky elements to
      * @returns {$} - The jq element
      */
-    $.fn.stick_in_parent = function (opts) {
-        var elm, enable_bottoming, fn, i, inner_scrolling, len, manual_spacer, offset_top, parent_selector, recalc_every, sticky_class;
+    $.fn.stackyKit = function(opts) {
+        var elm, enable_bottoming, fn, i, inner_scrolling, len, manual_spacer,
+            offset_top, parent_selector, recalc_every, sticky_class;
+
         if (opts == null) {
             opts = {};
         }
@@ -47,13 +83,15 @@
         if (enable_bottoming == null) {
             enable_bottoming = true;
         }
-        fn = function (elm, padding_bottom, parent_top, parent_height, top, height, el_float, detached) {
-            var bottomed, detach, fixed, last_pos, last_scroll_height, offset, parent, recalc, recalc_and_tick, recalc_counter, spacer, tick;
-            if (elm.data("sticky_kit")) {
+        fn = function(elm, padding_bottom, parent_top, parent_height, top, height, el_float, detached) {
+            var bottomed, detach, fixed, last_pos, containerHeight, offset,
+                parent, recalc, recalc_and_tick, recalc_counter, spacer, tick;
+
+            if (elm.data("stacky_kit")) {
                 return;
             }
-            elm.data("sticky_kit", true);
-            last_scroll_height = win.height();
+            elm.data("stacky_kit", true);
+            containerHeight = win.height();
             parent = elm.parent();
             if (parent_selector != null) {
                 parent = parent.closest(parent_selector);
@@ -67,12 +105,17 @@
             if (spacer) {
                 spacer.css('position', elm.css('position'));
             }
-            recalc = function () {
+
+            /**
+             *
+             * @returns {*}
+             */
+            recalc = function() {
                 var border_top, padding_top, restore;
                 if (detached) {
                     return;
                 }
-                last_scroll_height = win.height();
+                containerHeight = win.height();
                 border_top = parseInt(parent.css("border-top-width"), 10);
                 padding_top = parseInt(parent.css("padding-top"), 10);
                 padding_bottom = parseInt(parent.css("padding-bottom"), 10);
@@ -93,7 +136,9 @@
                     }).removeClass(sticky_class);
                     restore = true;
                 }
+
                 top = elm.position().top - (parseInt(elm.css("margin-top"), 10) || 0) - offset_top;
+
                 height = elm.outerHeight(true);
                 el_float = elm.css("float");
                 if (spacer) {
@@ -116,7 +161,12 @@
             last_pos = void 0;
             offset = offset_top;
             recalc_counter = recalc_every;
-            tick = function () {
+
+            /**
+             *
+             * @returns {*}
+             */
+            tick = function() {
                 var css, delta, recalced, scroll, will_bottom, win_height;
                 if (detached) {
                     return;
@@ -130,7 +180,7 @@
                         recalced = true;
                     }
                 }
-                if (!recalced && win.height() !== last_scroll_height) {
+                if (!recalced && win.height() !== containerHeight) {
                     recalc();
                     recalced = true;
                 }
@@ -148,7 +198,7 @@
                                 position: "absolute",
                                 bottom: "",
                                 top: offset
-                            }).trigger("sticky_kit:unbottom");
+                            }).trigger("stacky_kit:unbottom");
                             parent.css('position', 'static'); //
                         }
                     }
@@ -166,7 +216,7 @@
                             width: "",
                             top: ""
                         };
-                        elm.css(css).removeClass(sticky_class).trigger("sticky_kit:unstick");
+                        elm.css(css).removeClass(sticky_class).trigger("stacky_kit:unstick");
                     }
                     if (inner_scrolling) {
                         win_height = win.height();
@@ -198,7 +248,7 @@
                                 spacer.append(elm);
                             }
                         }
-                        elm.trigger("sticky_kit:stick");
+                        elm.trigger("stacky_kit:stick");
                     }
                 }
                 if (fixed && enable_bottoming) {
@@ -212,33 +262,45 @@
                                 position: "relative"
                             });
                         }
-                        return elm.css({
+                        elm.css({
                             position: "absolute",
                             bottom: padding_bottom,
                             top: "auto"
-                        }).trigger("sticky_kit:bottom");
+                        }).trigger("stacky_kit:bottom");
                     }
                 }
+                return elm;
             };
-            recalc_and_tick = function () {
+
+            /**
+             *
+             * @returns {*}
+             */
+            recalc_and_tick = function() {
                 recalc();
                 return tick();
             };
-            detach = function () {
+
+            /**
+             *
+             * @returns {*}
+             */
+            detach = function() {
                 detached = true;
                 win.off("touchmove", throttledTick);
                 win.off("scroll", throttledTick);
-                $window.off("resize", detach);
-                $(document.body).off("sticky_kit:recalc", throttledRecalc);
-                elm.off("sticky_kit:detach", detach);
-                elm.removeData("sticky_kit");
+                $window.off("resize", recreate);
+                $(document.body).off("stacky_kit:recalc", throttledRecalc);
+                $(document.body).off("stacky_kit:reload", recreate);
+                elm.off("stacky_kit:detach", detach);
+                elm.removeData("stacky_kit");
                 elm.css({
                     position: "",
                     bottom: "",
                     top: "",
                     width: ""
                 });
-                parent.position("position", "");
+                parent.css("position", "");
                 if (fixed) {
                     if (manual_spacer == null) {
                         if (el_float === "left" || el_float === "right") {
@@ -253,11 +315,23 @@
                 throttledRecalc = _.debounce(recalc_and_tick, 200);
             win.on("touchmove", throttledTick);
             win.on("scroll", throttledTick);
-            $window.on("resize", detach);
-            $(document.body).on("sticky_kit:recalc", throttledRecalc);
-            elm.on("sticky_kit:detach", detach);
+            $window.on("resize", recreate);
+            $(document.body).on("stacky_kit:recalc", throttledRecalc);
+            $(document.body).on("stacky_kit:reload", recreate);
+            elm.on("stacky_kit:detach", detach);
             return setTimeout(tick, 0);
         };
+
+        var self = this,
+            recreate = _.debounce(function() {
+                win.scrollTop(0);
+                setTimeout(function() {
+                    self.trigger('stacky_kit:detach');
+                    setTimeout(function() {
+                        self.stackyKit(opts);
+                    }, 0);
+                }, 0);
+            }, 200);
 
         for (i = 0, len = this.length; i < len; i++) {
             elm = this[i];
@@ -266,4 +340,4 @@
         return this;
     };
 
-}).call(this);
+}).call(window);
